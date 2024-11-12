@@ -1,3 +1,4 @@
+import { Redis } from 'ioredis';
 import { S3Client } from "@aws-sdk/client-s3";
 
 const s3Client = new S3Client({
@@ -10,18 +11,19 @@ const s3Client = new S3Client({
 
 const s3BucketName = process.env.S3_BUCKET_NAME as string;
 
-const connection = {
-    host: process.env.REDIS_HOST as string,
-    port: Number(process.env.REDIS_PORT as string),
-    username: process.env.REDIS_USERNAME,
-    password: process.env.REDIS_PASSWORD,
-};
+const queueConnection = new Redis(process.env.REDIS_URL as string, {
+    maxRetriesPerRequest: null
+});
+const workerConnection = new Redis(process.env.REDIS_URL as string, {
+    maxRetriesPerRequest: null
+});
 
 const queueName = process.env.QUEUE_NAME as string;
 
 export {
     s3Client,
     s3BucketName,
-    connection,
     queueName,
+    queueConnection,
+    workerConnection,
 };

@@ -1,8 +1,12 @@
 import { Queue, Worker } from 'bullmq';
-import { connection, queueName } from '../config/config';
+import {
+    queueConnection,
+    queueName,
+    workerConnection,
+} from '../config/config';
 import transcodeVideo from './transcode.service';
 
-const queue = new Queue(queueName, { connection });
+const queue = new Queue(queueName, { connection: queueConnection });
 
 const worker = new Worker(queueName, async (job) => {
     try {
@@ -24,7 +28,7 @@ const worker = new Worker(queueName, async (job) => {
         console.log(error);
     }
 }, {
-    connection,
+    connection: workerConnection,
     concurrency: Number(process.env.VIDEO_TRANSCODING_CONCURRENCY) || 1,
     limiter: {
         max: 1, // Maximum number of retries
